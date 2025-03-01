@@ -8,26 +8,24 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import java.sql.SQLException;
 
-import static java.lang.Thread.currentThread;
-
-public class Main9 {
-    public static void main(String[] args) throws SQLException, InterruptedException {
+public class MainLazyLoadManaged {
+    public static void main(String[] args) throws InterruptedException, SQLException {
         TcpServer.createTcpServer();
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hibernate2.ex1");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        final Main.Result result = Main.insertDataInDb(emf);
-        em.persist(result.airport());
-        em.persist(result.passenger1());
-        em.persist(result.passenger2());
+        final MainExemple1.Result result = MainExemple1.insertDataInDb(emf);
         em.getTransaction().commit();
         em.close();
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
         final Passenger passenger = em.find(Passenger.class, 2);
+        // Comme le EntityManager n'est pas fermé, on peut accéder aux tickets
+        // passenger est MANAGED
+        // Ne pas oublier que passenger est 'LAZY LOAD'
         for (Ticket ticket: passenger.getTickets()) {
             System.out.println(ticket.getNumber());
         }
@@ -35,6 +33,6 @@ public class Main9 {
         em.getTransaction().commit();
         em.close();
 
-        currentThread().join();
+        Thread.currentThread().join();
     }
 }

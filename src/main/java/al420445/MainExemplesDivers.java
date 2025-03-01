@@ -7,15 +7,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-public class Main4 {
+public class MainExemplesDivers {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hibernate2.ex1");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        var cedric = em.find(Passenger.class, 7);
-//        final Passenger cedric = new Passenger("Cedric");
-//        em.persist(cedric);
+        final Passenger cedric = new Passenger("Cedric");
+        em.persist(cedric);
 
         em.getTransaction().commit();
         em.close();
@@ -26,7 +25,7 @@ public class Main4 {
         em.getTransaction().begin();
 
         em.merge(cedric);
-        var cedric2 = em.find(Passenger.class, 7);
+        var cedric2 = em.find(Passenger.class, cedric.getId());
         var airport = em.find(Airport.class, 1);
         cedric2.setAirport(airport);
 
@@ -38,7 +37,7 @@ public class Main4 {
         em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        var cedric3 = em.find(Passenger.class, 7);
+        var cedric3 = em.find(Passenger.class, cedric2.getId());
         em.remove(cedric3);
 
         em.getTransaction().commit();

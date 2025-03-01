@@ -1,6 +1,7 @@
 package al420445.service;
 
 import al420445.airport.Airport;
+import al420445.airport.Passenger;
 import al420445.dao.AirportDao;
 
 import jakarta.transaction.Transactional;
@@ -18,12 +19,11 @@ public class AirportService {
         return airportDao.getAirports();
     }
 
-    @Transactional
     public void addPassenger(String name, int airportId) {
         airportDao.addPassenger(name, airportId);
     }
 
-    public void findPassengersByName(String passengersByName) {
-        airportDao.findPassengersByName(passengersByName);
+    public List<Passenger> findPassengersByName(String passengersByName) {
+        return airportDao.findPassengersByName(passengersByName);
     }
 }

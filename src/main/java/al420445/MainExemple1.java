@@ -2,13 +2,12 @@ package al420445;
 
 import al420445.airport.*;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-public class Main {
+public class MainExemple1 {
 
     public static void main(String[] args) throws InterruptedException, SQLException {
         TcpServer.createTcpServer();
@@ -80,18 +79,6 @@ public class Main {
         Result result = new Result(airport, passenger1, passenger2);
         return result;
     }
-
-//    public void insertOrdersInDb() {
-//        Product p1 = Product.builder()
-//                .productName("crayon")
-//                .build();
-//        Product p2 = Product.builder()
-//                .productName("efface")
-//                .build();
-//        Product p3 = Product.builder()
-//                .productName("regle")
-//                .build();
-//    }
 
     public record Result(Airport airport, Passenger passenger1, Passenger passenger2) {
     }

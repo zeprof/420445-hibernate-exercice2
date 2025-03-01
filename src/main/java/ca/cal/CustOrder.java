@@ -9,12 +9,12 @@ import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
 @Entity
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Order {
+public class CustOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -24,7 +24,7 @@ public class Order {
 
     private String orderNumber;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "custOrder")
     private Set<OrderItem> items = new HashSet<>();
 
 

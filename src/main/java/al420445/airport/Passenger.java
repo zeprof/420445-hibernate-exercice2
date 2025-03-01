@@ -1,12 +1,16 @@
 package al420445.airport;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Entity
 @Table(name="PASSENGERS")
+@Getter @Setter
 public class Passenger {
 
     @Id
@@ -18,7 +22,6 @@ public class Passenger {
     private String name;
 
     @ManyToOne
-    @JoinColumn
     private Airport airport;
 
     @Embedded
@@ -31,50 +34,20 @@ public class Passenger {
         this.name = name;
     }
 
+    // Requis obligatoirement pour JPA
     public Passenger() {
-
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Airport getAirport() {
-        return airport;
-    }
-
-    public void setAirport(Airport airport) {
-        this.airport = airport;
     }
 
     public List<Ticket> getTickets() {
         return Collections.unmodifiableList(tickets);
     }
 
+    // Fait la double association
     public void addTicket(Ticket ticket) {
         ticket.setPassenger(this);
         tickets.add(ticket);
     }
 
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
 
     @Override
     public String toString() {

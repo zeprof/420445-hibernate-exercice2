@@ -29,11 +29,11 @@ public class AirportDaoImpl implements AirportDao {
 
         em.getTransaction().begin();
 
-        final Query query = em.createQuery("select pass from Passenger where name=?");
-        query.setParameter(1, name);
+        final Query query = em.createQuery("select p from Passenger p where :name = name");
+        query.setParameter("name", name);
         final List passengers = query.getResultList();
-        if (!passengers.isEmpty()) {
-
+        if (passengers.isEmpty()) {
+            em.persist(new Passenger(name));
         }
 
 
@@ -54,9 +54,9 @@ public class AirportDaoImpl implements AirportDao {
         queryPassenger.setParameter(1, passengersByName.toLowerCase() + "%");
 
         em.getTransaction().commit();
-
+        List<Passenger> resultList = queryPassenger.getResultList();
         em.close();
         emf.close();
-        return queryPassenger.getResultList();
+        return resultList;
     }
 }

@@ -1,7 +1,6 @@
 package al420445;
 
 import al420445.airport.Airport;
-import al420445.airport.BebelleDTO;
 
 import al420445.airport.Passenger;
 import jakarta.persistence.EntityManager;
@@ -12,11 +11,11 @@ import jakarta.persistence.TypedQuery;
 import java.sql.SQLException;
 import java.util.List;
 
-public class Main6 {
+public class MainExempleJoinFetch1 {
     public static void main(String[] args) throws InterruptedException, SQLException {
         TcpServer.createTcpServer();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hibernate2.ex1");
-        Main.insertDataInDb(emf);
+        MainExemple1.insertDataInDb(emf);
 
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
@@ -27,22 +26,24 @@ public class Main6 {
         final List<Passenger> passengers = pass.getResultList();
         System.out.println(passengers);
 
+        // Dans cet exemple, on fait un 'join fetch' afin de populer immédiatement
+        // la collection de 'passengers' dans Airport.java
+        // Notez la projection qui indique seulement 'a' (l'alias utilisé pour Airport)  Cela veut dire que l'on veut
+        // avoir une instance hydratée d'Airport.  Le 'getSingleResult()' nous le retoune à la ligne 38
+        String qlString1 = "select a from Airport a join fetch a.passengers where lower(a.name) like 'henri%'";
+        String qlString2 = "select a from Airport a where lower(a.name) like 'henri%'";
         final TypedQuery<Airport> airportQuery =
-                em.createQuery(
-            "select a from Airport a join fetch a.passengers where lower(a.name) like 'henri%'", Airport.class);
+                em.createQuery(qlString1, Airport.class);
         final Airport airport = airportQuery.getSingleResult();
-        System.out.println(airport);
 
-        var queryStr = """
-                select new al420445.airport.BebelleDTO(count(t), t.passenger) 
-                from Ticket t 
-                group by t.passenger
-        """;
-        final List<BebelleDTO> bebelleDTOS = em.createQuery(
-                queryStr, BebelleDTO.class).getResultList();
-        bebelleDTOS.forEach(o -> {
-            System.out.println(o.count() + " " + o.passenger());
-        });
+        // Ici on détache notre instance 'airport' qui est dans le Persistence Context
+        em.detach(airport);
+
+        // Comme la collection 'passengers' fait partie du toString() de Airport, l'exécution du programme
+        // va essayer d'imprimer tous les 'passengers' de 'Airport'
+        // Ça va passer ici puisqu'on a fait le 'join fetch' plus haut à la ligne 32
+        System.out.println(airport);
+        System.out.println(airport.getPassengers());
 
         em.getTransaction().commit();
         em.close();

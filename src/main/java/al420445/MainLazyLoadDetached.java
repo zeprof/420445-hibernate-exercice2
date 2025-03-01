@@ -8,31 +8,36 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import java.sql.SQLException;
 
-public class Main8 {
-    public static void main(String[] args) throws InterruptedException, SQLException {
+import static java.lang.Thread.currentThread;
+
+public class MainLazyLoadDetached {
+    public static void main(String[] args) throws SQLException, InterruptedException {
         TcpServer.createTcpServer();
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hibernate2.ex1");
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
-        final Main.Result result = Main.insertDataInDb(emf);
-        em.persist(result.airport());
-        em.persist(result.passenger1());
-        em.persist(result.passenger2());
+        MainExemple1.insertDataInDb(emf);
         em.getTransaction().commit();
         em.close();
 
         em = emf.createEntityManager();
         em.getTransaction().begin();
         final Passenger passenger = em.find(Passenger.class, 2);
+        em.getTransaction().commit();
+        em.close();
+        // Les tickets sont toujours lazy Load, mais ici le EntityManager a été fermé
+        // Il n'y a donc plus de PersistentContext
+        // passenger est DETACHED
+        // Et comme les tickets sont Lazy Load, il n'y a plus de sessions pour aller les chercher
+        // à la bd
+        // Voir la console
         for (Ticket ticket: passenger.getTickets()) {
             System.out.println(ticket.getNumber());
         }
 
-        em.getTransaction().commit();
-        em.close();
 
-        Thread.currentThread().join();
+        currentThread().join();
     }
 }
